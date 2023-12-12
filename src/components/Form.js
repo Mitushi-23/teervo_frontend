@@ -4,11 +4,12 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Box, Paper, Typography } from "@mui/material";
 import WeatherCard from "./WeatherCard";
+import WeatherTable from "./WeatherTable";
 
 const Form = () => {
   const [city, setCity] = useState("");
   const [weatherData, setWeatherData] = useState({});
-  const [forecastData, setForecastData] = useState({});
+  const [forecastData, setForecastData] = useState(null);
 
   const handleInputChange = (event) => {
     setCity(event.target.value);
@@ -33,14 +34,12 @@ const Form = () => {
         }
       );
       setForecastData(response_data.data.forecast);
-      // console.log(response_data.data.forecast)
     } catch (error) {
       console.error("Error fetching weather data:", error);
     }
   };
 
   const getWeatherIcon = (iconCode) => {
-    // You can replace this with your preferred weather icon source or library
     return `https://openweathermap.org/img/wn/${iconCode}.png`;
   };
 
@@ -58,92 +57,107 @@ const Form = () => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: "column",
-            width: "500px",
+            justifyContent: "space-between",
+            width: "1000px",
           }}
         >
-          <TextField
-            label="City"
-            value={city}
-            onChange={handleInputChange}
-            sx={{ marginBottom: "10px" }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            sx={{ marginBottom: "20px" }}
-          >
-            Get Weather
-          </Button>
-          <Box sx={{ width: "100%" }}>
-            {Object.keys(weatherData).map((city) => (
-              <Paper
-                key={city}
-                sx={{
-                  padding: "10px",
-                  marginBottom: "10px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      fontSize: "25px",
-                      fontWeight: "600",
-                      textTransform: "capitalize",
-                    }}
-                  >
-                    {city}
-                  </Typography>
-                  <Typography variant="body1">
-                    Temperature: {weatherData[city].temperature}
-                  </Typography>
-                  <Typography variant="body1">
-                    Humity: {weatherData[city].humidity}
-                  </Typography>
-                </div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <Typography
-                    variant="body1"
-                    sx={{ textTransform: "capitalize" }}
-                  >
-                    {weatherData[city].weatherDescription}
-                  </Typography>
-                  <img
-                    src={getWeatherIcon(weatherData[city].icon)}
-                    alt="Weather Icon"
-                    style={{ width: "50px", height: "50px" }}
-                  />
-                </div>
-              </Paper>
-            ))}
-          </Box>
-        </Box>
-        <Box>
-          <Typography variant="h4" sx={{ textAlign: "center" }}>
-            Weather Forecast
-          </Typography>
           <Box
             sx={{
               display: "flex",
-              width: "1000px",
-              overflow: "auto",
-              marginTop: "20px",
-              justifyContent: "start",
+              flexDirection: "column",
+              width: "500px",
             }}
           >
-            {Object.keys(forecastData).map((date) =>
-              forecastData[date].map((data, index) => (
-                <React.Fragment key={index}>
-                  <WeatherCard date={date} data={data} />
-                </React.Fragment>
-              ))
-            )}
+            <TextField
+              label="City"
+              value={city}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+              sx={{ marginBottom: "20px" }}
+            >
+              Get Weather
+            </Button>
+            <Box sx={{ width: "100%" }}>
+              {Object.keys(weatherData).map((city) => (
+                <Paper
+                  key={city}
+                  sx={{
+                    padding: "10px",
+                    marginBottom: "10px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontSize: "25px",
+                        fontWeight: "600",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {city}
+                    </Typography>
+                    <Typography variant="body1">
+                      Temperature: {weatherData[city].temperature}
+                    </Typography>
+                    <Typography variant="body1">
+                      Humity: {weatherData[city].humidity}
+                    </Typography>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ textTransform: "capitalize" }}
+                    >
+                      {weatherData[city].weatherDescription}
+                    </Typography>
+                    <img
+                      src={getWeatherIcon(weatherData[city].icon)}
+                      alt="Weather Icon"
+                      style={{ width: "50px", height: "50px" }}
+                    />
+                  </div>
+                </Paper>
+              ))}
+            </Box>
           </Box>
+          {forecastData && 
+          <Box>
+            <WeatherTable forecastData={forecastData} />
+          </Box>
+          }
         </Box>
+        {forecastData && (
+          <Box>
+            <Typography variant="h4" sx={{ textAlign: "center" }}>
+              Weather Forecast
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                width: "1000px",
+                overflow: "auto",
+                marginTop: "20px",
+                justifyContent: "start",
+              }}
+            >
+              {Object.keys(forecastData).map((date) =>
+                forecastData[date].map((data, index) => (
+                  <React.Fragment key={index}>
+                    <WeatherCard date={date} data={data} />
+                  </React.Fragment>
+                ))
+              )}
+            </Box>
+          </Box>
+        )}
       </Box>
     </>
   );
